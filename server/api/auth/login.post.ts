@@ -9,16 +9,11 @@ export default defineEventHandler(async (event) => {
 
   const config = useRuntimeConfig()
 
-  // Constant-time-ish comparison to avoid timing attacks
-  const emailMatch    = email    === config.adminEmail
-  const passwordMatch = password === config.adminPassword
-
-  if (!emailMatch || !passwordMatch) {
-    // Identical error regardless of which field was wrong
+  if (email !== config.adminEmail || password !== config.adminPassword) {
     throw createError({ statusCode: 401, statusMessage: 'Invalid credentials.' })
   }
 
-  await signAndSetSession(event, { email, role: 'admin' })
+  await signAndSetSession(event, { email, role: 'admin' }, config.jwtSecret)
 
   return { ok: true }
 })

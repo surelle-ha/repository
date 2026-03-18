@@ -2,18 +2,18 @@ import type { Config } from 'tailwindcss'
 
 export default {
   content: [
-    './app/components/**/*.{vue,ts}',
-    './app/layouts/**/*.vue',
-    './app/pages/**/*.vue',
-    './app/plugins/**/*.ts',
-    './app/app.vue',
+    './components/**/*.{vue,ts}',
+    './layouts/**/*.vue',
+    './pages/**/*.vue',
+    './plugins/**/*.ts',
+    './app.vue',
   ],
   theme: {
     extend: {
       fontFamily: {
-        sans:    ['Inter', 'sans-serif'],
-        head:    ['Syne', 'sans-serif'],
-        mono:    ['DM Mono', 'monospace'],
+        sans: ['Inter', 'sans-serif'],
+        head: ['Syne', 'sans-serif'],
+        mono: ['DM Mono', 'monospace'],
       },
       colors: {
         bg:       '#0d0d0f',

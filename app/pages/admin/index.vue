@@ -1,7 +1,6 @@
 <template>
   <div class="flex flex-col gap-8">
 
-    <!-- Page header -->
     <div class="flex items-end justify-between gap-4 flex-wrap">
       <div>
         <p class="font-mono text-[11px] uppercase tracking-widest text-muted mb-1">CMS Dashboard</p>
@@ -14,7 +13,6 @@
       </button>
     </div>
 
-    <!-- Stats -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
       <div v-for="s in stats" :key="s.label"
            class="bg-surface border border-border rounded-xl px-5 py-4 flex flex-col gap-1">
@@ -23,9 +21,7 @@
       </div>
     </div>
 
-    <!-- Table -->
     <div class="bg-surface border border-border rounded-xl overflow-hidden">
-
       <div v-if="pending" class="flex flex-col gap-1.5 p-3">
         <div v-for="n in 4" :key="n" class="h-14 rounded-lg bg-surface2 animate-pulse" />
       </div>
@@ -34,12 +30,9 @@
         <table class="w-full border-collapse">
           <thead>
             <tr class="bg-surface2">
-              <th class="px-4 py-2.5 text-left font-mono text-[10px] uppercase tracking-widest text-muted border-b border-border">Project</th>
-              <th class="px-4 py-2.5 text-left font-mono text-[10px] uppercase tracking-widest text-muted border-b border-border">Status</th>
-              <th class="px-4 py-2.5 text-left font-mono text-[10px] uppercase tracking-widest text-muted border-b border-border hidden sm:table-cell">Tags</th>
-              <th class="px-4 py-2.5 text-left font-mono text-[10px] uppercase tracking-widest text-muted border-b border-border hidden md:table-cell">Sort</th>
-              <th class="px-4 py-2.5 text-left font-mono text-[10px] uppercase tracking-widest text-muted border-b border-border">★</th>
-              <th class="px-4 py-2.5 text-right font-mono text-[10px] uppercase tracking-widest text-muted border-b border-border">Actions</th>
+              <th v-for="h in ['Project','Status','Tags','Sort','★','Actions']" :key="h"
+                  class="px-4 py-2.5 text-left font-mono text-[10px] uppercase tracking-widest
+                         text-muted border-b border-border last:text-right">{{ h }}</th>
             </tr>
           </thead>
           <tbody>
@@ -47,7 +40,7 @@
                 class="border-b border-white/[0.04] last:border-0 hover:bg-white/[0.025] transition-colors">
               <td class="px-4 py-3">
                 <div class="flex items-center gap-2.5">
-                  <span class="text-xl">{{ p.icon || '◆' }}</span>
+                  <span class="text-xl select-none">{{ p.icon || '◆' }}</span>
                   <div>
                     <div class="text-sm font-medium text-ink">{{ p.name }}</div>
                     <div class="font-mono text-[11px] text-muted">{{ p.slug }}</div>
@@ -58,14 +51,12 @@
                 <span class="inline-block px-2 py-0.5 rounded font-mono text-[10px] font-semibold uppercase tracking-wide"
                       :class="{
                         'bg-green-500/15 text-green-400':   p.status === 'live',
-                        'bg-yellow-400/12 text-yellow-400': p.status === 'coming_soon',
-                        'bg-blue-300/12 text-blue-300':     p.status === 'wip',
-                        'bg-white/7 text-muted':            p.status === 'archived',
-                      }">
-                  {{ statusLabel(p.status) }}
-                </span>
+                        'bg-yellow-400/10 text-yellow-400': p.status === 'coming_soon',
+                        'bg-blue-300/10 text-blue-300':     p.status === 'wip',
+                        'bg-white/5 text-muted':            p.status === 'archived',
+                      }">{{ statusLabel(p.status) }}</span>
               </td>
-              <td class="px-4 py-3 hidden sm:table-cell">
+              <td class="px-4 py-3">
                 <div class="flex flex-wrap gap-1">
                   <span v-for="t in (p.tags ?? []).slice(0,3)" :key="t"
                         class="font-mono text-[10px] text-muted">#{{ t }}</span>
@@ -73,7 +64,7 @@
                         class="font-mono text-[10px] text-muted">+{{ (p.tags?.length ?? 0) - 3 }}</span>
                 </div>
               </td>
-              <td class="px-4 py-3 font-mono text-sm text-ink2 hidden md:table-cell">{{ p.sort_order }}</td>
+              <td class="px-4 py-3 font-mono text-sm text-ink2">{{ p.sort_order }}</td>
               <td class="px-4 py-3 text-base">
                 <span :class="p.featured ? 'text-accent' : 'text-border'">★</span>
               </td>
@@ -95,11 +86,10 @@
       </template>
 
       <div v-else class="py-12 text-center font-mono text-sm text-muted">
-        No projects yet. Add one above.
+        No projects yet. Click "+ New Project" above.
       </div>
     </div>
 
-    <!-- Create/Edit Modal -->
     <ProjectFormModal
       v-if="showModal"
       :project="editingProject"
@@ -107,7 +97,6 @@
       @saved="onSaved"
     />
 
-    <!-- Delete Confirm Modal -->
     <Teleport to="body">
       <div v-if="deletingProject"
            class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
@@ -120,9 +109,9 @@
                     class="px-4 py-2 text-sm text-ink2 border border-border rounded-lg
                            hover:border-ink2 hover:text-ink transition-all cursor-pointer">Cancel</button>
             <button @click="doDelete" :disabled="deleteLoading"
-                    class="px-4 py-2 text-sm font-semibold text-red-400 bg-red-400/15
-                           border border-red-400/35 rounded-lg hover:bg-red-400/25
-                           disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer">
+                    class="px-4 py-2 text-sm font-semibold text-red-400 bg-red-400/15 border border-red-400/35
+                           rounded-lg hover:bg-red-400/25 disabled:opacity-50 disabled:cursor-not-allowed
+                           transition-all cursor-pointer">
               {{ deleteLoading ? 'Deleting…' : 'Delete' }}
             </button>
           </div>
@@ -160,7 +149,7 @@ function openCreate() {
   showModal.value      = true
 }
 function openEdit(p: ProjectRow) {
-  editingProject.value = p
+  editingProject.value = { ...p }
   showModal.value      = true
 }
 function closeModal() {

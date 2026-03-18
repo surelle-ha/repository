@@ -1,7 +1,8 @@
 import { verifySession } from '../../utils/auth'
 
 export default defineEventHandler(async (event) => {
-  const session = await verifySession(event)
+  const config = useRuntimeConfig()
+  const session = await verifySession(event, config.jwtSecret)
   if (!session) {
     throw createError({ statusCode: 401, statusMessage: 'Not authenticated' })
   }

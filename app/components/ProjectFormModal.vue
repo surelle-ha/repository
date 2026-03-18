@@ -2,30 +2,25 @@
   <Teleport to="body">
     <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md"
          @click.self="$emit('close')">
-
       <div class="bg-surface border border-border rounded-2xl w-full max-w-lg max-h-[92vh] overflow-y-auto">
 
-        <!-- Header -->
-        <div class="flex items-center justify-between px-6 pt-6 pb-0 mb-5">
+        <div class="flex items-center justify-between px-6 pt-6 mb-5">
           <h2 class="font-head font-extrabold text-ink text-2xl tracking-tighter">
             {{ isEdit ? 'Edit Project' : 'New Project' }}
           </h2>
-          <button @click="$emit('close')"
+          <button type="button" @click="$emit('close')"
                   class="w-8 h-8 flex items-center justify-center rounded-lg text-xs text-muted
                          bg-surface2 hover:text-ink transition-colors cursor-pointer">✕</button>
         </div>
 
-        <!-- Form -->
         <form @submit.prevent="handleSubmit" class="px-6 pb-6 flex flex-col gap-4">
 
-          <!-- Icon + Name -->
           <div class="flex gap-3">
             <div class="flex flex-col gap-1.5 w-16">
               <label class="font-mono text-[10px] uppercase tracking-widest text-ink2">Icon</label>
               <input v-model="form.icon" maxlength="4" placeholder="👻"
                      class="w-full px-2 py-2 text-center bg-surface2 border border-border rounded-lg
-                            text-ink text-sm font-sans placeholder:text-muted outline-none
-                            focus:border-accent transition-colors" />
+                            text-ink text-sm font-sans placeholder:text-muted outline-none focus:border-accent transition-colors" />
             </div>
             <div class="flex flex-col gap-1.5 flex-1">
               <label class="font-mono text-[10px] uppercase tracking-widest text-ink2">
@@ -37,7 +32,6 @@
             </div>
           </div>
 
-          <!-- Slug -->
           <div class="flex flex-col gap-1.5">
             <label class="font-mono text-[10px] uppercase tracking-widest text-ink2">
               Slug <span class="text-accent">*</span>
@@ -49,7 +43,6 @@
             <span class="font-mono text-[10px] text-muted">Lowercase, hyphens only.</span>
           </div>
 
-          <!-- Tagline -->
           <div class="flex flex-col gap-1.5">
             <label class="font-mono text-[10px] uppercase tracking-widest text-ink2">Tagline</label>
             <input v-model="form.tagline" placeholder="One-liner description"
@@ -57,7 +50,6 @@
                           font-sans placeholder:text-muted outline-none focus:border-accent transition-colors" />
           </div>
 
-          <!-- Description -->
           <div class="flex flex-col gap-1.5">
             <label class="font-mono text-[10px] uppercase tracking-widest text-ink2">Description</label>
             <textarea v-model="form.description" rows="3" placeholder="Longer description shown on the card…"
@@ -66,7 +58,6 @@
                              resize-y min-h-[72px]" />
           </div>
 
-          <!-- URL -->
           <div class="flex flex-col gap-1.5">
             <label class="font-mono text-[10px] uppercase tracking-widest text-ink2">URL</label>
             <input v-model="form.url" type="url" placeholder="https://project.surelle.xyz"
@@ -74,7 +65,6 @@
                           font-sans placeholder:text-muted outline-none focus:border-accent transition-colors" />
           </div>
 
-          <!-- Tags -->
           <div class="flex flex-col gap-1.5">
             <label class="font-mono text-[10px] uppercase tracking-widest text-ink2">Tags</label>
             <input v-model="tagsInput" placeholder="nuxt, neon, ai  (comma separated)"
@@ -83,7 +73,6 @@
             <span class="font-mono text-[10px] text-muted">Comma-separated.</span>
           </div>
 
-          <!-- Status + Sort -->
           <div class="flex gap-3">
             <div class="flex flex-col gap-1.5 flex-1">
               <label class="font-mono text-[10px] uppercase tracking-widest text-ink2">Status</label>
@@ -104,28 +93,21 @@
             </div>
           </div>
 
-          <!-- Featured toggle -->
           <div class="flex items-center justify-between py-1">
             <span class="font-mono text-[10px] uppercase tracking-widest text-ink2">Featured</span>
             <button type="button" @click="form.featured = !form.featured"
-                    class="relative w-10 h-5 rounded-full border transition-all cursor-pointer"
-                    :class="form.featured
-                      ? 'bg-accent border-accent'
-                      : 'bg-surface2 border-border'">
+                    class="relative w-10 h-5 rounded-full border transition-all cursor-pointer flex-shrink-0"
+                    :class="form.featured ? 'bg-accent border-accent' : 'bg-surface2 border-border'">
               <span class="absolute top-0.5 w-4 h-4 rounded-full transition-all"
-                    :class="form.featured
-                      ? 'left-[calc(100%-18px)] bg-bg'
-                      : 'left-0.5 bg-muted'" />
+                    :class="form.featured ? 'left-[calc(100%-18px)] bg-bg' : 'left-0.5 bg-muted'" />
             </button>
           </div>
 
-          <!-- Error -->
           <p v-if="errorMsg"
-             class="font-mono text-xs text-red-400 bg-red-400/8 border border-red-400/20 rounded-md px-3 py-2">
+             class="font-mono text-xs text-red-400 bg-red-400/10 border border-red-400/25 rounded-md px-3 py-2">
             {{ errorMsg }}
           </p>
 
-          <!-- Footer actions -->
           <div class="flex justify-end gap-2.5 pt-1">
             <button type="button" @click="$emit('close')"
                     class="px-4 py-2 text-sm text-ink2 border border-border rounded-lg
@@ -152,16 +134,16 @@
 import type { ProjectRow } from '../../server/db/schema'
 
 type FormShape = {
-  slug: string
-  name: string
-  tagline: string | null
+  slug:        string
+  name:        string
+  tagline:     string | null
   description: string | null
-  url: string | null
-  icon: string | null
-  tags: string[]
-  status: 'live' | 'coming_soon' | 'wip' | 'archived'
-  featured: boolean
-  sort_order: number
+  url:         string | null
+  icon:        string | null
+  tags:        string[]
+  status:      'live' | 'coming_soon' | 'wip' | 'archived'
+  featured:    boolean
+  sort_order:  number
 }
 
 const props = defineProps<{ project: ProjectRow | null }>()
@@ -182,11 +164,11 @@ const form = reactive<FormShape>(
     ? {
         slug:        props.project.slug,
         name:        props.project.name,
-        tagline:     props.project.tagline,
-        description: props.project.description,
-        url:         props.project.url,
-        icon:        props.project.icon,
-        tags:        props.project.tags ?? [],
+        tagline:     props.project.tagline     ?? null,
+        description: props.project.description ?? null,
+        url:         props.project.url         ?? null,
+        icon:        props.project.icon        ?? null,
+        tags:        Array.isArray(props.project.tags) ? [...props.project.tags] : [],
         status:      props.project.status,
         featured:    props.project.featured,
         sort_order:  props.project.sort_order,
@@ -204,32 +186,34 @@ async function handleSubmit() {
 
   form.tags = tagsInput.value
     .split(',')
-    .map(t => t.trim().toLowerCase())
+    .map((t: string) => t.trim().toLowerCase())
     .filter(Boolean)
 
   try {
     if (isEdit.value && props.project) {
       await $fetch(`/api/projects/${props.project.slug}`, {
         method: 'PATCH',
-        body: form,
+        body: { ...form },
       })
     } else {
       await $fetch('/api/projects', {
         method: 'POST',
-        body: form,
+        body: { ...form },
       })
     }
-    // Reset loading BEFORE emitting so the button doesn't stay disabled
     loading.value = false
     emit('saved')
   } catch (err: any) {
-    errorMsg.value = err?.data?.statusMessage ?? 'Something went wrong.'
-    loading.value  = false
+    errorMsg.value =
+      err?.data?.statusMessage ??
+      err?.statusMessage ??
+      err?.message ??
+      'Something went wrong.'
+    loading.value = false
   }
 }
 
-// Auto-slug from name on create only
-watch(() => form.name, (name) => {
+watch(() => form.name, (name: string) => {
   if (isEdit.value) return
   form.slug = name
     .toLowerCase()

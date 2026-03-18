@@ -9,7 +9,8 @@ export default defineEventHandler(async (event) => {
 
   if (getMethod(event) === 'OPTIONS') { setResponseStatus(event, 204); return null }
 
-  await requireAuth(event)
+  const config = useRuntimeConfig()
+  await requireAuth(event, config.apiSecretKey, config.jwtSecret)
 
   const body = await readBody<any>(event)
   if (!body?.name || !body?.slug) {
@@ -17,20 +18,20 @@ export default defineEventHandler(async (event) => {
   }
 
   const shouldUpsert = body.upsert === true
-  delete body.upsert
+  const { upsert: _u, id: _id, created_at: _c, updated_at: _ua, ...values } = body
 
   const db = useDb()
 
   if (shouldUpsert) {
     const [row] = await db
       .insert(projects)
-      .values(body)
-      .onConflictDoUpdate({ target: projects.slug, set: { ...body, updated_at: new Date() } })
+      .values(values)
+      .onConflictDoUpdate({ target: projects.slug, set: { ...values, updated_at: new Date() } })
       .returning()
     return { ok: true, data: row }
   }
 
-  const [row] = await db.insert(projects).values(body).returning()
+  const [row] = await db.insert(projects).values(values).returning()
   setResponseStatus(event, 201)
   return { ok: true, data: row }
 })
