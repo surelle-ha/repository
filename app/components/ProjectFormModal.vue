@@ -15,6 +15,7 @@
 
         <form @submit.prevent="handleSubmit" class="px-6 pb-6 flex flex-col gap-4">
 
+          <!-- Icon + Name -->
           <div class="flex gap-3">
             <div class="flex flex-col gap-1.5 w-16">
               <label class="font-mono text-[10px] uppercase tracking-widest text-ink2">Icon</label>
@@ -32,6 +33,7 @@
             </div>
           </div>
 
+          <!-- Slug -->
           <div class="flex flex-col gap-1.5">
             <label class="font-mono text-[10px] uppercase tracking-widest text-ink2">
               Slug <span class="text-accent">*</span>
@@ -40,39 +42,33 @@
                    pattern="[a-z0-9\-]+" title="Lowercase letters, numbers, and hyphens only"
                    class="w-full px-3 py-2 bg-surface2 border border-border rounded-lg text-ink text-sm
                           font-mono placeholder:text-muted outline-none focus:border-accent transition-colors" />
-            <span class="font-mono text-[10px] text-muted">Lowercase, hyphens only.</span>
           </div>
 
+          <!-- Tagline -->
           <div class="flex flex-col gap-1.5">
             <label class="font-mono text-[10px] uppercase tracking-widest text-ink2">Tagline</label>
-            <input v-model="form.tagline" placeholder="One-liner description"
+            <input v-model="form.tagline" placeholder="One-liner for cards"
                    class="w-full px-3 py-2 bg-surface2 border border-border rounded-lg text-ink text-sm
                           font-sans placeholder:text-muted outline-none focus:border-accent transition-colors" />
           </div>
 
+          <!-- Description -->
           <div class="flex flex-col gap-1.5">
             <label class="font-mono text-[10px] uppercase tracking-widest text-ink2">Description</label>
-            <textarea v-model="form.description" rows="3" placeholder="Longer description shown on the card…"
+            <textarea v-model="form.description" rows="3" placeholder="Longer description…"
                       class="w-full px-3 py-2 bg-surface2 border border-border rounded-lg text-ink text-sm
-                             font-sans placeholder:text-muted outline-none focus:border-accent transition-colors
-                             resize-y min-h-[72px]" />
+                             font-sans placeholder:text-muted outline-none focus:border-accent transition-colors resize-none" />
           </div>
 
+          <!-- URL -->
           <div class="flex flex-col gap-1.5">
             <label class="font-mono text-[10px] uppercase tracking-widest text-ink2">URL</label>
-            <input v-model="form.url" type="url" placeholder="https://project.surelle.xyz"
+            <input v-model="form.url" type="url" placeholder="https://example.com"
                    class="w-full px-3 py-2 bg-surface2 border border-border rounded-lg text-ink text-sm
                           font-sans placeholder:text-muted outline-none focus:border-accent transition-colors" />
           </div>
 
-          <div class="flex flex-col gap-1.5">
-            <label class="font-mono text-[10px] uppercase tracking-widest text-ink2">Tags</label>
-            <input v-model="tagsInput" placeholder="nuxt, neon, ai  (comma separated)"
-                   class="w-full px-3 py-2 bg-surface2 border border-border rounded-lg text-ink text-sm
-                          font-sans placeholder:text-muted outline-none focus:border-accent transition-colors" />
-            <span class="font-mono text-[10px] text-muted">Comma-separated.</span>
-          </div>
-
+          <!-- Status + Sort order -->
           <div class="flex gap-3">
             <div class="flex flex-col gap-1.5 flex-1">
               <label class="font-mono text-[10px] uppercase tracking-widest text-ink2">Status</label>
@@ -87,27 +83,39 @@
             </div>
             <div class="flex flex-col gap-1.5 w-24">
               <label class="font-mono text-[10px] uppercase tracking-widest text-ink2">Sort</label>
-              <input v-model.number="form.sort_order" type="number" min="0" placeholder="0"
+              <input v-model.number="form.sort_order" type="number" min="0"
                      class="w-full px-3 py-2 bg-surface2 border border-border rounded-lg text-ink text-sm
-                            font-sans placeholder:text-muted outline-none focus:border-accent transition-colors" />
+                            font-mono outline-none focus:border-accent transition-colors" />
             </div>
           </div>
 
-          <div class="flex items-center justify-between py-1">
+          <!-- Tags -->
+          <div class="flex flex-col gap-1.5">
+            <label class="font-mono text-[10px] uppercase tracking-widest text-ink2">Tags</label>
+            <input v-model="tagsInput" placeholder="nuxt, postgres, ai"
+                   class="w-full px-3 py-2 bg-surface2 border border-border rounded-lg text-ink text-sm
+                          font-sans placeholder:text-muted outline-none focus:border-accent transition-colors" />
+            <p class="font-mono text-[10px] text-muted">Comma-separated.</p>
+          </div>
+
+          <!-- Featured toggle -->
+          <div class="flex items-center justify-between">
             <span class="font-mono text-[10px] uppercase tracking-widest text-ink2">Featured</span>
             <button type="button" @click="form.featured = !form.featured"
-                    class="relative w-10 h-5 rounded-full border transition-all cursor-pointer flex-shrink-0"
+                    class="relative w-10 h-5 rounded-full border transition-all cursor-pointer"
                     :class="form.featured ? 'bg-accent border-accent' : 'bg-surface2 border-border'">
               <span class="absolute top-0.5 w-4 h-4 rounded-full transition-all"
                     :class="form.featured ? 'left-[calc(100%-18px)] bg-bg' : 'left-0.5 bg-muted'" />
             </button>
           </div>
 
+          <!-- Error message -->
           <p v-if="errorMsg"
              class="font-mono text-xs text-red-400 bg-red-400/10 border border-red-400/25 rounded-md px-3 py-2">
             {{ errorMsg }}
           </p>
 
+          <!-- Actions -->
           <div class="flex justify-end gap-2.5 pt-1">
             <button type="button" @click="$emit('close')"
                     class="px-4 py-2 text-sm text-ink2 border border-border rounded-lg
@@ -191,14 +199,19 @@ async function handleSubmit() {
 
   try {
     if (isEdit.value && props.project) {
+      // Edit — PATCH /api/projects/:slug
       await $fetch(`/api/projects/${props.project.slug}`, {
         method: 'PATCH',
         body: { ...form },
       })
     } else {
+      // Create — POST /api/projects
+      // Note: we avoid $fetch('/api/projects') which can hit the cached GET handler.
+      // The explicit index.post.ts file handles POST to /api/projects correctly.
       await $fetch('/api/projects', {
         method: 'POST',
-        body: { ...form },
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...form }),
       })
     }
     loading.value = false
@@ -213,6 +226,7 @@ async function handleSubmit() {
   }
 }
 
+// Auto-generate slug from name when creating
 watch(() => form.name, (name: string) => {
   if (isEdit.value) return
   form.slug = name

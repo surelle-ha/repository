@@ -11,41 +11,39 @@ export default defineNuxtConfig({
   ],
 
   runtimeConfig: {
-    databaseUrl: process.env.DATABASE_URL || '',
-    adminEmail: process.env.ADMIN_EMAIL || 'admin@surelle.xyz',
+    databaseUrl:   process.env.DATABASE_URL   || '',
+    adminEmail:    process.env.ADMIN_EMAIL    || 'admin@example.com',
     adminPassword: process.env.ADMIN_PASSWORD || '',
-    jwtSecret: process.env.JWT_SECRET || '',
-    apiSecretKey: process.env.API_SECRET_KEY || '',
+    jwtSecret:     process.env.JWT_SECRET     || '',
+    apiSecretKey:  process.env.API_SECRET_KEY || '',
     public: {
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://repository.surelle.xyz',
+      siteUrl:      process.env.NUXT_PUBLIC_SITE_URL      || 'http://localhost:3000',
+      siteOwner:    process.env.NUXT_PUBLIC_SITE_OWNER    || 'Developer',
+      topbarTitle:  process.env.NUXT_PUBLIC_TOPBAR_TITLE  || 'repository',
+      topbarDomain: process.env.NUXT_PUBLIC_TOPBAR_DOMAIN || '',
+      heroBanner:   process.env.NUXT_PUBLIC_HERO_BANNER   || "Everything I've built.",
+      heroSub:      process.env.NUXT_PUBLIC_HERO_SUB      || 'A living catalogue of side projects, tools, and experiments.',
+      hideOriginUi: process.env.NUXT_PUBLIC_HIDE_ORIGIN_UI === 'true',
+      forkUrl:      process.env.NUXT_PUBLIC_FORK_URL      || 'https://github.com/surelle-ha/repository',
     },
   },
 
   nitro: {
     routeRules: {
-      '/api/projects':    { cache: { maxAge: 60 } },
-      '/api/projects/**': { cache: { maxAge: 60 } },
-      '/api/v1/**':       { cache: { maxAge: 60 } },
+      '/api/projects':     { cache: false },
+      '/api/projects/**':  { cache: false },
+      '/api/settings/**':  { cache: false },
+      '/api/v1/**':        { cache: { maxAge: 60 } },
     },
   },
 
   app: {
     head: {
-      title: 'Repository — Surelle',
+      title: 'Repository',
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'description', content: 'A curated index of projects by Surelle.' },
-        { property: 'og:title', content: 'Repository — Surelle' },
-        { property: 'og:description', content: 'A curated index of projects by Surelle.' },
-        { property: 'og:url', content: 'https://repository.surelle.xyz' },
-      ],
-      link: [
-        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-        {
-          rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@600;700;800&family=Inter:wght@400;500&display=swap',
-        },
+        { name: 'description', content: 'A curated index of projects.' },
       ],
     },
   },

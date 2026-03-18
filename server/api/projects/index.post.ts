@@ -7,16 +7,16 @@ export default defineEventHandler(async (event) => {
   await requireAuth(event, config.apiSecretKey, config.jwtSecret)
 
   const body = await readBody<{
-    slug: string
-    name: string
-    tagline?: string | null
+    slug:         string
+    name:         string
+    tagline?:     string | null
     description?: string | null
-    url?: string | null
-    icon?: string | null
-    tags?: string[]
-    status?: 'live' | 'coming_soon' | 'wip' | 'archived'
-    featured?: boolean
-    sort_order?: number
+    url?:         string | null
+    icon?:        string | null
+    tags?:        string[]
+    status?:      'live' | 'coming_soon' | 'wip' | 'archived'
+    featured?:    boolean
+    sort_order?:  number
   }>(event)
 
   if (!body?.name || !body?.slug) {

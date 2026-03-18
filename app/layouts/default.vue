@@ -5,13 +5,21 @@
                    bg-bg/85 backdrop-blur-md border-b border-border">
       <NuxtLink to="/" class="flex items-center gap-2 font-mono text-sm hover:opacity-70 transition-opacity">
         <span class="text-lg">⬡</span>
-        <span>repository<span class="text-muted">.surelle.xyz</span></span>
+        <span>
+          {{ settings.topbarTitle
+          }}<span v-if="settings.topbarDomain" class="text-muted">{{ settings.topbarDomain }}</span>
+        </span>
       </NuxtLink>
       <nav class="flex items-center gap-1">
         <NuxtLink to="/"
           class="px-3 py-1.5 rounded-md font-mono text-xs text-ink2 hover:text-ink hover:bg-surface2 transition-all"
           active-class="!text-accent">
           Index
+        </NuxtLink>
+        <NuxtLink to="/docs"
+          class="px-3 py-1.5 rounded-md font-mono text-xs text-ink2 hover:text-ink hover:bg-surface2 transition-all"
+          active-class="!text-accent">
+          Docs
         </NuxtLink>
         <NuxtLink v-if="user" to="/admin"
           class="px-3 py-1.5 rounded-md font-mono text-xs text-accent2 hover:bg-surface2 transition-all">
@@ -29,10 +37,7 @@
     </main>
 
     <footer class="border-t border-border px-6 py-4 flex items-center gap-3 font-mono text-xs text-muted">
-      <span>© {{ new Date().getFullYear() }} Surelle</span>
-      <span>·</span>
-      <a href="https://surelle.xyz" target="_blank" rel="noopener"
-         class="hover:text-ink2 transition-colors">surelle.xyz</a>
+      <span>© {{ new Date().getFullYear() }} {{ settings.siteOwner }}</span>
     </footer>
 
   </div>
@@ -40,6 +45,8 @@
 
 <script setup lang="ts">
 const { user, logout: doLogout } = useAuth()
+const { settings } = useSiteSettings()
+
 async function logout() {
   await doLogout()
   navigateTo('/admin/login')
