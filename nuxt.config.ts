@@ -7,7 +7,16 @@ export default defineNuxtConfig({
     '@nuxt/icon',
     '@nuxt/image',
     '@nuxtjs/tailwindcss',
+    '@nuxt/scripts'
   ],
+
+  scripts: {
+    registry: {
+      googleAnalytics: {
+        id: process.env.NUXT_PUBLIC_GOOGLE_ANALYTICS_ID,
+      }
+    }
+  },
 
   runtimeConfig: {
     // ── Server-only secrets ────────────────────────────────────────
@@ -23,6 +32,7 @@ export default defineNuxtConfig({
       // Only the site URL is needed at build time.
       // All other settings (toggles, display text) come from the DB.
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+      googleAnalyticsId: process.env.NUXT_PUBLIC_GOOGLE_ANALYTICS_ID || 'G-XXXXXXXXXX',
     },
   },
 
