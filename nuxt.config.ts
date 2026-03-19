@@ -12,27 +12,26 @@ export default defineNuxtConfig({
 
   scripts: {
     registry: {
-      googleAnalytics: {
-        id: process.env.NUXT_PUBLIC_GOOGLE_ANALYTICS_ID,
-      }
+      googleAnalytics: process.env.NUXT_PUBLIC_GOOGLE_ANALYTICS_ID
+        ? {
+          id: process.env.NUXT_PUBLIC_GOOGLE_ANALYTICS_ID
+        }
+        : false
     }
   },
 
   runtimeConfig: {
     // ── Server-only secrets ────────────────────────────────────────
-    databaseUrl:   process.env.DATABASE_URL   || '',
-    adminEmail:    process.env.ADMIN_EMAIL    || '',
+    databaseUrl: process.env.DATABASE_URL || '',
+    adminEmail: process.env.ADMIN_EMAIL || '',
     adminPassword: process.env.ADMIN_PASSWORD || '',
-    jwtSecret:     process.env.JWT_SECRET     || '',
-    apiSecretKey:  process.env.API_SECRET_KEY || '',
-    // NOTE: DISABLE_EXTERNAL_API env var removed — manage via Admin > Settings instead
+    jwtSecret: process.env.JWT_SECRET || '',
+    apiSecretKey: process.env.API_SECRET_KEY || '',
 
     // ── Public (browser-safe) ──────────────────────────────────────
     public: {
-      // Only the site URL is needed at build time.
-      // All other settings (toggles, display text) come from the DB.
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
-      googleAnalyticsId: process.env.NUXT_PUBLIC_GOOGLE_ANALYTICS_ID || 'G-XXXXXXXXXX',
+      googleAnalyticsId: process.env.NUXT_PUBLIC_GOOGLE_ANALYTICS_ID || '',
     },
   },
 
@@ -40,7 +39,6 @@ export default defineNuxtConfig({
 
   nitro: {
     routeRules: {
-      // Disable ALL API route caching so toggle changes take effect immediately
       '/api/**': { cache: false },
     },
   },
