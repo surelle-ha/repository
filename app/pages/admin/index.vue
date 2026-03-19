@@ -112,6 +112,28 @@
     <template v-else-if="activeTab === 'settings'">
       <div class="max-w-2xl flex flex-col gap-6">
 
+        <!-- ── Google Analytics indicator ───────────────── -->
+        <div class="bg-surface border border-border rounded-2xl p-5 flex items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <span class="text-lg">📊</span>
+            <div>
+              <p class="font-mono text-xs text-ink">Google Analytics</p>
+              <p class="font-mono text-[10px] text-muted">NUXT_PUBLIC_GOOGLE_ANALYTICS_ID</p>
+            </div>
+          </div>
+          <div v-if="googleAnalyticsId"
+               class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-500/15 border border-green-500/25">
+            <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+            <span class="font-mono text-[10px] text-green-400 uppercase tracking-widest">Active</span>
+            <span class="font-mono text-[10px] text-green-400/70 truncate max-w-[120px]">{{ googleAnalyticsId }}</span>
+          </div>
+          <div v-else
+               class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-border">
+            <span class="w-1.5 h-1.5 rounded-full bg-muted" />
+            <span class="font-mono text-[10px] text-muted uppercase tracking-widest">Not configured</span>
+          </div>
+        </div>
+
         <!-- ── Display settings ──────────────────────────── -->
         <div class="bg-surface border border-border rounded-2xl p-8 flex flex-col gap-5">
           <div>
@@ -260,6 +282,10 @@ const tabs = [
   { label: 'Settings', value: 'settings' },
 ]
 const activeTab = ref<'projects' | 'settings'>('projects')
+
+// ── Google Analytics ID from runtime config ───────────────────────
+const config = useRuntimeConfig()
+const googleAnalyticsId = computed(() => config.public.googleAnalyticsId || '')
 
 // ── Projects ─────────────────────────────────────────────────────
 const { data: projects, pending, refresh } = await useFetch<ProjectRow[]>('/api/projects', {

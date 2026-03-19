@@ -1,29 +1,49 @@
-<!-- PATH: app/pages/index.vue -->
-
 <template>
   <div>
 
     <!-- ── Hero ─────────────────────────────────────────────────── -->
-    <section class="py-10">
-      <p class="inline-flex items-center gap-2 font-mono text-xs text-muted uppercase tracking-widest mb-4">
-        <span class="w-1.5 h-1.5 rounded-full bg-accent shadow-[0_0_8px_#e2ff5d] animate-pulse" />
-        {{ (projects ?? []).length }} projects indexed
-      </p>
+    <section class="relative overflow-hidden rounded-2xl mb-8 px-8 pt-8 pb-10">
+      <div class="absolute inset-0 pointer-events-none">
+        <BackgroundsColorBends
+          class="w-full h-full"
+          :colors="['#ff5c7a', '#8a5cff', '#00ffd1']"
+          :rotation="30"
+          :speed="0.2"
+          :scale="1"
+          :frequency="1"
+          :warpStrength="1"
+          :mouseInfluence="1.2"
+          :parallax="0.5"
+          :noise="0.1"
+          transparent
+        />
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-bg" />
+      </div>
 
-      <h1 class="font-head font-extrabold text-ink leading-none tracking-tighter mb-4"
-          style="font-size: clamp(2.8rem, 7vw, 5.5rem)">
-        <template v-if="bannerLines.length > 1">
-          {{ bannerLines[0] }}<br />
-          <em class="not-italic text-accent">{{ bannerLines.slice(1).join(' ') }}</em>
-        </template>
-        <template v-else>
-          <em class="not-italic text-accent">{{ bannerLines[0] }}</em>
-        </template>
-      </h1>
+      <div class="relative z-10">
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-5
+                    bg-black/40 border border-white/15 backdrop-blur-sm">
+          <span class="w-1.5 h-1.5 rounded-full bg-accent shadow-[0_0_8px_#e2ff5d] animate-pulse" />
+          <span class="font-mono text-xs text-white/80 uppercase tracking-widest">
+            {{ (projects ?? []).length }} projects indexed
+          </span>
+        </div>
 
-      <p class="text-ink2 text-base max-w-lg leading-relaxed">
-        {{ settings.heroSub }}
-      </p>
+        <h1 class="font-head font-extrabold text-ink leading-none tracking-tighter mb-4"
+            style="font-size: clamp(2.8rem, 7vw, 5.5rem)">
+          <template v-if="bannerLines.length > 1">
+            {{ bannerLines[0] }}<br />
+            <em class="not-italic text-accent">{{ bannerLines.slice(1).join(' ') }}</em>
+          </template>
+          <template v-else>
+            <em class="not-italic text-accent">{{ bannerLines[0] }}</em>
+          </template>
+        </h1>
+
+        <p class="text-ink2 text-base max-w-lg leading-relaxed">
+          {{ settings.heroSub }}
+        </p>
+      </div>
     </section>
 
     <!-- ── Status filters ───────────────────────────────────────── -->
@@ -56,30 +76,12 @@
       <ProjectCard v-for="p in filtered" :key="p.id" :project="p" />
     </div>
 
-    <!-- ── Fork / Deploy CTA ────────────────────────────────────── -->
-    <!-- Hidden when hideOriginUi is 'true' in DB settings -->
-    <div v-if="!isOriginHidden"
-         class="mt-16 pt-10 border-t border-border flex flex-col sm:flex-row items-start
-                sm:items-center justify-between gap-4 flex-wrap">
-      <p class="font-mono text-xs text-muted">Want your own project repository page?</p>
-      <div class="flex items-center gap-2 flex-wrap">
-        <a :href="vercelDeployUrl" target="_blank" rel="noopener"
-           class="inline-flex items-center gap-2 px-4 py-2 rounded-lg
-                  bg-black border border-white/20 font-mono text-xs text-white
-                  hover:border-white/50 transition-all no-underline">
-          <svg width="12" height="10" viewBox="0 0 76 65" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-            <path d="M37.5274 0L75.0548 65H0L37.5274 0Z"/>
-          </svg>
-          Deploy to Vercel
-        </a>
-        <a :href="settings.forkUrl" target="_blank" rel="noopener"
-           class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border
-                  font-mono text-xs text-ink2 bg-surface hover:border-ink2 hover:text-ink
-                  transition-all no-underline">
-          <span>⑂</span> Fork on GitHub
-        </a>
-      </div>
-    </div>
+    <!-- ── Fork / Deploy CTA — toast in lower right ─────────────── -->
+    <ForkDeployToast
+      v-if="!isOriginHidden"
+      :fork-url="settings.forkUrl"
+      :vercel-deploy-url="vercelDeployUrl"
+    />
 
   </div>
 </template>
@@ -87,11 +89,9 @@
 <script setup lang="ts">
 import type { ProjectRow } from '../../server/db/schema'
 
-// All settings from DB — no config.public.* reads for display settings
 const { settings, isOriginHidden } = useSiteSettings()
-
-const config = useRuntimeConfig()
-const siteUrl = computed(() => config.public.siteUrl || 'https://your-domain.com')
+const config  = useRuntimeConfig()
+const siteUrl = computed(() => (config.public.siteUrl as string || 'http://localhost:3000').replace(/\/$/, ''))
 
 const vercelDeployUrl = computed(() =>
   `https://vercel.com/new/clone?repository-url=${encodeURIComponent(settings.value.forkUrl)}&env=DATABASE_URL,ADMIN_EMAIL,ADMIN_PASSWORD,JWT_SECRET,API_SECRET_KEY,NUXT_PUBLIC_SITE_URL&project-name=repository&repository-name=repository`
@@ -109,6 +109,43 @@ const { data: projects, pending, error } = await useFetch<ProjectRow[]>('/api/pr
   default: () => [],
 })
 
+// ── SEO ──────────────────────────────────────────────────────────
+const pageTitle       = computed(() => settings.value.topbarTitle || 'Repository')
+const pageDescription = computed(() => settings.value.heroSub || 'A curated index of projects.')
+
+useSeoMeta({
+  title:              pageTitle.value,
+  ogTitle:            pageTitle.value,
+  description:        pageDescription.value,
+  ogDescription:      pageDescription.value,
+  ogUrl:              siteUrl.value,
+  ogType:             'website',
+  ogImage:            `${siteUrl.value}/og-default.png`,
+  twitterCard:        'summary_large_image',
+  twitterTitle:       pageTitle.value,
+  twitterDescription: pageDescription.value,
+  twitterImage:       `${siteUrl.value}/og-default.png`,
+  robots:             'index,follow',
+})
+
+useHead({
+  title: pageTitle.value,
+  link:  [{ rel: 'canonical', href: siteUrl.value }],
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type':    'WebSite',
+        name:        pageTitle.value,
+        description: pageDescription.value,
+        url:         siteUrl.value,
+      }),
+    },
+  ],
+})
+
+// ── Filters & grid ────────────────────────────────────────────────
 const filters = [
   { label: 'All',         value: 'all' },
   { label: 'Live',        value: 'live' },

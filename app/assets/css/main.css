@@ -3,6 +3,17 @@ html {
   scroll-behavior: smooth;
 }
 
+/* ── Text selection ────────────────────────────────────────────── */
+::selection {
+  background-color: #e2ff5d;
+  color: #0d0d0f;
+}
+
+::-moz-selection {
+  background-color: #e2ff5d;
+  color: #0d0d0f;
+}
+
 /* ── Scrollbar (minim-scroll) ──────────────────────────────────────────────── */
 
 .minim-scroll {

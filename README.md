@@ -16,6 +16,7 @@
 - **Featured projects** — pin selected entries to the top
 - **Docs page** — built-in `/docs` page with full API reference for external consumers
 - **Setup wizard** — if required environment variables are missing, the app redirects to a guided setup page
+- **Google Analytics** — optional GA4 integration via `NUXT_PUBLIC_GOOGLE_ANALYTICS_ID`; status visible in the Admin → Settings panel
 - **One-click Vercel deploy** — includes `vercel.json` and a deploy button that pre-fills required env vars
 - **Smooth UX** — minimalist scrollbar, page transition animations, dark design system built with Tailwind CSS
 
@@ -37,7 +38,7 @@ pnpm install   # or npm install
 cp .env.example .env
 ```
 
-Open `.env` and fill in the five required values. Everything else is configured from the admin panel at runtime.
+Open `.env` and fill in the required values. Everything else is configured from the admin panel at runtime.
 
 ### 3. Set up the database
 
@@ -67,16 +68,24 @@ Sign in at `/admin/login` using the `ADMIN_EMAIL` and `ADMIN_PASSWORD` you set.
 
 ## Environment Variables
 
-Only five variables are required. Everything else — site name, hero text, visibility toggles — is managed from **Admin → Settings** and stored in the database.
+Required variables are checked on startup — the app redirects to a setup wizard if any are missing. Optional variables enhance the app but are not required to run.
 
-| Variable | Required | Description |
-|---|---|---|
-| `DATABASE_URL` | ✅ | Neon Postgres connection string |
-| `ADMIN_EMAIL` | ✅ | Admin login email |
-| `ADMIN_PASSWORD` | ✅ | Admin login password |
-| `JWT_SECRET` | ✅ | Secret for signing session cookies (`openssl rand -hex 32`) |
-| `API_SECRET_KEY` | ✅ | Bearer token for `POST /api/v1/projects` |
-| `NUXT_PUBLIC_SITE_URL` | — | Canonical URL of your deployment (default: `http://localhost:3000`) |
+### Required
+
+| Variable | Description |
+|---|---|
+| `DATABASE_URL` | Neon Postgres connection string |
+| `ADMIN_EMAIL` | Admin login email |
+| `ADMIN_PASSWORD` | Admin login password |
+| `JWT_SECRET` | Secret for signing session cookies (`openssl rand -hex 32`) |
+
+### Optional
+
+| Variable | Description |
+|---|---|
+| `API_SECRET_KEY` | Bearer token for `POST /api/v1/projects` (external push API) |
+| `NUXT_PUBLIC_SITE_URL` | Canonical URL of your deployment (default: `http://localhost:3000`) |
+| `NUXT_PUBLIC_GOOGLE_ANALYTICS_ID` | Google Analytics 4 Measurement ID (e.g. `G-XXXXXXXXXX`). When set, GA tracking is automatically injected and an **Active** indicator appears in Admin → Settings. |
 
 ---
 
@@ -90,7 +99,7 @@ Click the **Deploy to Vercel** button on the live site or docs page. It pre-fill
 
 1. Push your fork to GitHub.
 2. Go to [vercel.com/new](https://vercel.com/new) and import the repository.
-3. Add the five required environment variables.
+3. Add the required environment variables (and any optional ones you want).
 4. Click **Deploy**.
 
 The included `vercel.json` targets the `sin1` (Singapore) region. Change `regions` to whichever is closest to your Neon database.
@@ -157,6 +166,7 @@ Visit `/admin` — redirects to `/admin/login` if not authenticated.
 | **Projects** | Create, edit, delete projects. Set status, tags, sort order, featured flag. |
 | **Settings → Display** | Site owner name, topbar title, domain suffix, hero headline, sub-header, fork URL. |
 | **Settings → Visibility** | Toggle external API on/off, show/hide the docs page, show/hide fork/deploy buttons. All changes are instant — no redeploy needed. |
+| **Settings → Google Analytics** | Read-only indicator showing whether `NUXT_PUBLIC_GOOGLE_ANALYTICS_ID` is configured. |
 
 ---
 

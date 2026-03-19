@@ -7,8 +7,14 @@ export default defineEventHandler(async (event) => {
   if (!config.adminEmail)   missing.push('ADMIN_EMAIL')
   if (!config.adminPassword) missing.push('ADMIN_PASSWORD')
 
+  const optionalPresence: Record<string, boolean> = {
+    NUXT_PUBLIC_SITE_URL:            !!(config.public.siteUrl && config.public.siteUrl !== 'http://localhost:3000'),
+    NUXT_PUBLIC_GOOGLE_ANALYTICS_ID: !!(config.public.googleAnalyticsId),
+    API_SECRET_KEY:                  !!(config.apiSecretKey),
+  }
+
   if (missing.length > 0) {
-    return { ready: false, missing }
+    return { ready: false, missing, optionalPresence }
   }
 
   try {
@@ -20,9 +26,10 @@ export default defineEventHandler(async (event) => {
     return {
       ready: false,
       missing: ['DATABASE_URL'],
+      optionalPresence,
       error: 'Could not connect to the database. Check your DATABASE_URL.',
     }
   }
 
-  return { ready: true, missing: [] }
+  return { ready: true, missing: [], optionalPresence }
 })

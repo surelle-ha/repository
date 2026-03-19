@@ -22,20 +22,16 @@
 
       <!-- Hero image placeholder -->
       <div class="relative w-full h-52 sm:h-72 rounded-2xl border border-border overflow-hidden mb-10 bg-surface">
-        <!-- Decorative grid -->
         <div class="absolute inset-0"
              style="background-image:radial-gradient(circle,rgba(255,255,255,0.05) 1px,transparent 1px);background-size:24px 24px" />
-        <!-- Gradient wash using tag colours -->
         <div class="absolute inset-0"
              :style="`background: radial-gradient(ellipse at 30% 50%, ${accentColor}22 0%, transparent 70%),
                                   radial-gradient(ellipse at 80% 20%, ${accentColor}11 0%, transparent 60%)`" />
-        <!-- Big icon centred -->
         <div class="absolute inset-0 flex items-center justify-center">
           <span class="text-[6rem] leading-none select-none drop-shadow-lg" style="filter:drop-shadow(0 0 32px rgba(0,0,0,0.6))">
             {{ project.icon || '◆' }}
           </span>
         </div>
-        <!-- Status badge pinned top-right -->
         <div class="absolute top-4 right-4">
           <span class="inline-block px-2.5 py-1 rounded-full font-mono text-[10px] font-semibold uppercase tracking-widest backdrop-blur-md"
                 :class="{
@@ -45,7 +41,6 @@
                   'bg-white/5 text-muted border border-white/10':                 project.status === 'archived',
                 }">{{ statusLabel }}</span>
         </div>
-        <!-- Featured ribbon -->
         <div v-if="project.featured"
              class="absolute top-4 left-4 flex items-center gap-1.5 px-2.5 py-1 rounded-full
                     bg-accent/20 border border-accent/30 backdrop-blur-md">
@@ -124,28 +119,71 @@ import type { ProjectRow } from '../../../server/db/schema'
 const route = useRoute()
 const slug  = route.params.slug as string
 
+const config  = useRuntimeConfig()
+const siteUrl = computed(() => (config.public.siteUrl as string || 'http://localhost:3000').replace(/\/$/, ''))
+
+const { settings } = useSiteSettings()
+const siteName = computed(() => settings.value.topbarTitle || 'Repository')
+
 const { data: project, pending } = await useFetch<ProjectRow>(`/api/projects/${slug}`)
 
-// Redirect to 404-style if not found after load
-watchEffect(() => {
-  if (!pending.value && !project.value) {
-    // handled in template
-  }
+// ── SEO ──────────────────────────────────────────────────────────
+const pageTitle = computed(() =>
+  project.value ? `${project.value.name} — ${siteName.value}` : siteName.value
+)
+const pageDescription = computed(() =>
+  project.value?.description || project.value?.tagline || `Check out ${project.value?.name} on ${siteName.value}.`
+)
+const canonicalUrl = computed(() => `${siteUrl.value}/projects/${slug}`)
+
+useSeoMeta({
+  title:              pageTitle.value,
+  ogTitle:            pageTitle.value,
+  description:        pageDescription.value,
+  ogDescription:      pageDescription.value,
+  ogUrl:              canonicalUrl.value,
+  ogType:             'article',
+  ogImage:            `${siteUrl.value}/og-default.png`,
+  twitterCard:        'summary_large_image',
+  twitterTitle:       pageTitle.value,
+  twitterDescription: pageDescription.value,
+  twitterImage:       `${siteUrl.value}/og-default.png`,
+  robots:             'index,follow',
 })
 
-useHead(() => ({
-  title: project.value ? `${project.value.name} — Repository` : 'Project',
-  meta: [
-    { name: 'description', content: project.value?.tagline ?? project.value?.description ?? '' },
-  ],
-}))
+useHead({
+  title: pageTitle.value,
+  link:  [{ rel: 'canonical', href: canonicalUrl.value }],
+  script: computed(() => project.value ? [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context':   'https://schema.org',
+        '@type':      'SoftwareApplication',
+        name:          project.value.name,
+        description:   project.value.description || project.value.tagline || '',
+        url:           project.value.url || canonicalUrl.value,
+        applicationCategory: 'WebApplication',
+        operatingSystem: 'Web',
+        keywords:      (project.value.tags || []).join(', '),
+        dateModified:  new Date(project.value.updated_at).toISOString(),
+        datePublished: new Date(project.value.created_at).toISOString(),
+        isPartOf: {
+          '@type': 'WebSite',
+          name:    siteName.value,
+          url:     siteUrl.value,
+        },
+      }),
+    },
+  ] : []),
+})
 
+// ── Display helpers ───────────────────────────────────────────────
 const statusLabels: Record<string, string> = {
   live: 'Live', coming_soon: 'Coming Soon', wip: 'WIP', archived: 'Archived',
 }
 const statusLabel = computed(() => statusLabels[project.value?.status ?? ''] ?? project.value?.status ?? '')
 
-// Pick a consistent accent colour for the hero gradient based on the first tag
 const tagColours: Record<string, string> = {
   nuxt: '#00dc82', vue: '#42b883', react: '#61dafb', ai: '#e2ff5d',
   postgres: '#336791', node: '#8cc84b', typescript: '#3178c6', rust: '#ce422b',
