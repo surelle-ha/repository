@@ -88,7 +88,6 @@
 </template>
 
 <script setup lang="ts">
-// PATH: app/pages/setup.vue
 definePageMeta({ layout: false })
 
 const checking = ref(false)

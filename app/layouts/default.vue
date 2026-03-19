@@ -1,5 +1,3 @@
-<!-- PATH: app/layouts/default.vue -->
-
 <template>
   <div class="flex flex-col min-h-screen bg-bg text-ink font-sans antialiased">
 
@@ -55,10 +53,7 @@
 </template>
 
 <script setup lang="ts">
-// PATH: app/layouts/default.vue
 const { user, logout: doLogout } = useAuth()
-
-// All settings come from the DB via useSiteSettings — no config.public.* reads
 const { settings, isDocsHidden } = useSiteSettings()
 
 async function logout() {

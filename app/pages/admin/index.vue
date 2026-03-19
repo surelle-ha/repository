@@ -250,7 +250,6 @@
 </template>
 
 <script setup lang="ts">
-// PATH: app/pages/admin/index.vue
 import type { ProjectRow } from '../../../server/db/schema'
 
 definePageMeta({ middleware: 'auth' })

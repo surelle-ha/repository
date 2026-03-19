@@ -1,10 +1,10 @@
 import { useDb } from '../../db/client'
 import { projects } from '../../db/schema'
 import { eq } from 'drizzle-orm'
-import { requireSameOrigin } from '../../utils/guards'
+import { requireInternalToken } from '../../utils/guards'
 
 export default defineEventHandler(async (event) => {
-  requireSameOrigin(event)
+  requireInternalToken(event)
 
   const slug = getRouterParam(event, 'slug')
   if (!slug) throw createError({ statusCode: 400, statusMessage: 'Missing slug' })

@@ -1,7 +1,3 @@
-// PATH: server/api/settings/index.patch.ts
-//
-// Admin-only. Upserts any of the allowed setting keys into site_settings.
-
 import { useDb } from '../../db/client'
 import { siteSettings } from '../../db/schema'
 import { requireAuth } from '../../utils/auth'

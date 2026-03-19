@@ -1,9 +1,3 @@
-// PATH: app/composables/useSiteSettings.ts
-//
-// Single source of truth for all site settings on the client.
-// Data comes from /api/settings (DB) only — no env vars on the frontend.
-// Shared across all components via useState so there is only one fetch.
-
 export interface SiteSettings {
   siteOwner:          string
   topbarTitle:        string

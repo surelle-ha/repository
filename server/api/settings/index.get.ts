@@ -1,9 +1,3 @@
-// PATH: server/api/settings/index.get.ts
-//
-// Returns all site settings from the DB.
-// Falls back to hardcoded defaults when a key has no DB row yet.
-// No env vars — everything is managed via Admin > Settings.
-
 import { useDb } from '../../db/client'
 import { siteSettings } from '../../db/schema'
 

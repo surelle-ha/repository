@@ -3,29 +3,35 @@ import { siteSettings } from '../db/schema'
 import { eq } from 'drizzle-orm'
 import type { H3Event } from 'h3'
 
-export function requireSameOrigin(event: H3Event) {
-  const origin = getHeader(event, 'origin')
-  const config = useRuntimeConfig()
-  const siteUrl = (config.public.siteUrl as string || '').replace(/\/$/, '')
+export function requireInternalToken(event: H3Event) {
+  const config   = useRuntimeConfig()
+  const secret   = config.jwtSecret as string
+  const siteUrl  = (config.public.siteUrl as string || '').replace(/\/$/, '')
 
-  // No Origin header = SSR server-side call or same-site navigation → allow
-  if (!origin) return
+  // 1. Check internal token (SSR server-side calls)
+  const token = getHeader(event, 'x-internal-token')
+  if (secret && token === secret) return
 
-  // Origin matches our site → allow
-  if (siteUrl && origin === siteUrl) return
+  // 2. Check Referer (client-side browser fetch after hydration)
+  const referer = getHeader(event, 'referer') || getHeader(event, 'referrer') || ''
+  if (siteUrl && referer.startsWith(siteUrl)) return
 
-  // In development, also allow localhost origins
+  // 3. Allow localhost in development
   if (
-    origin.startsWith('http://localhost') ||
-    origin.startsWith('http://127.0.0.1')
+    referer.startsWith('http://localhost') ||
+    referer.startsWith('http://127.0.0.1')
   ) return
 
-  // Everything else → block
+  // 4. Block everything else
   throw createError({
     statusCode: 403,
-    statusMessage: 'This endpoint is restricted to same-origin requests only. Use /api/v1/ for external access.',
+    statusMessage: 'This endpoint is for internal use only. Use /api/v1/ for external access.',
   })
 }
+
+// ── External API guard ───────────────────────────────────────────
+// Blocks /api/v1/* when disableExternalApi = 'true' in DB.
+// Managed from Admin > Settings — no env var needed.
 
 export async function requireExternalApiEnabled() {
   let disabled = false
@@ -40,11 +46,9 @@ export async function requireExternalApiEnabled() {
 
     disabled = row?.value === 'true'
   } catch {
-    // DB unreachable — fail open, keep API working
     disabled = false
   }
 
-  // Throw OUTSIDE the try/catch so it propagates correctly
   if (disabled) {
     throw createError({
       statusCode: 403,

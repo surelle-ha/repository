@@ -85,7 +85,6 @@
 </template>
 
 <script setup lang="ts">
-// PATH: app/pages/index.vue
 import type { ProjectRow } from '../../server/db/schema'
 
 // All settings from DB — no config.public.* reads for display settings

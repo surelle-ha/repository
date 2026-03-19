@@ -137,7 +137,6 @@ fetch('{{ siteUrl }}/api/v1/projects?featured=true')</pre>
 </template>
 
 <script setup lang="ts">
-// PATH: app/pages/docs/index.vue
 const { settings, isDocsHidden, isOriginHidden } = useSiteSettings()
 
 const config  = useRuntimeConfig()
