@@ -194,6 +194,7 @@ pnpm db:studio    # Open Drizzle Studio (visual DB GUI)
 - [ ] Add `GitHub/GitLab Repository` field on admin page.
 - [ ] Add `Rate Limit` for external API.
 - [ ] Add `CORS` for external API.
+- [ ] Change `docs` page to use `cURL` instead of Nuxt's fetch.
 
 ---
 
