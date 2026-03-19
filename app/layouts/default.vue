@@ -56,6 +56,8 @@
 const { user, logout: doLogout } = useAuth()
 const { settings, isDocsHidden } = useSiteSettings()
 
+useHead({ bodyAttrs: { class: 'minim-scroll' } })
+
 async function logout() {
   await doLogout()
   navigateTo('/admin/login')
