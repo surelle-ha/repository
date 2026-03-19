@@ -86,6 +86,7 @@ Required variables are checked on startup — the app redirects to a setup wizar
 | `API_SECRET_KEY` | Bearer token for `POST /api/v1/projects` (external push API) |
 | `NUXT_PUBLIC_SITE_URL` | Canonical URL of your deployment (default: `http://localhost:3000`) |
 | `NUXT_PUBLIC_GOOGLE_ANALYTICS_ID` | Google Analytics 4 Measurement ID (e.g. `G-XXXXXXXXXX`). When set, GA tracking is automatically injected and an **Active** indicator appears in Admin → Settings. |
+| `NUXT_PUBLIC_GOOGLE_SITE_VERIFICATION` | Google Search Console site verification meta tag value |
 
 ---
 
