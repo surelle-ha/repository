@@ -1,14 +1,23 @@
-/**
- * PATCH /api/settings
- * Updates one or more site-customisation settings.
- * Requires admin authentication.
- */
+// PATH: server/api/settings/index.patch.ts
+//
+// Admin-only. Upserts any of the allowed setting keys into site_settings.
+
 import { useDb } from '../../db/client'
 import { siteSettings } from '../../db/schema'
 import { requireAuth } from '../../utils/auth'
-import { eq } from 'drizzle-orm'
 
-const ALLOWED_KEYS = ['siteOwner', 'topbarTitle', 'topbarDomain', 'heroBanner', 'heroSub'] as const
+const ALLOWED_KEYS = [
+  'siteOwner',
+  'topbarTitle',
+  'topbarDomain',
+  'heroBanner',
+  'heroSub',
+  'disableExternalApi',
+  'hideDocs',
+  'hideOriginUi',
+  'forkUrl',
+] as const
+
 type SettingKey = (typeof ALLOWED_KEYS)[number]
 
 export default defineEventHandler(async (event) => {
@@ -24,7 +33,6 @@ export default defineEventHandler(async (event) => {
     if (body[key] === undefined) continue
     const value = String(body[key])
 
-    // upsert
     await db
       .insert(siteSettings)
       .values({ key, value, updated_at: new Date() })

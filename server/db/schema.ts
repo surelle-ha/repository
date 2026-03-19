@@ -1,3 +1,5 @@
+// PATH: server/db/schema.ts
+
 import {
   pgTable, pgEnum,
   uuid, text, boolean, integer, timestamp,
@@ -29,6 +31,19 @@ export type ProjectRow    = typeof projects.$inferSelect
 export type ProjectInsert = typeof projects.$inferInsert
 
 // ── Site settings ────────────────────────────────────────────────
+// All keys stored as text. Boolean settings use 'true' / 'false' strings.
+//
+// Supported keys:
+//   siteOwner          — display name in footer (default: 'Developer')
+//   topbarTitle        — brand label in nav     (default: 'repository')
+//   topbarDomain       — suffix after title     (default: '')
+//   heroBanner         — index page headline    (default: "Everything I've built.")
+//   heroSub            — index page sub-text    (default: 'A living catalogue...')
+//   disableExternalApi — block /api/v1/*        (default: 'false')
+//   hideDocs           — hide /docs page        (default: 'false')
+//   hideOriginUi       — hide fork/deploy CTA   (default: 'false')
+//   forkUrl            — fork button URL        (default: GitHub repo URL)
+
 export const siteSettings = pgTable('site_settings', {
   key:        text('key').primaryKey(),
   value:      text('value').notNull(),

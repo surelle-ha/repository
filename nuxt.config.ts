@@ -1,4 +1,5 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
+// PATH: nuxt.config.ts
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
@@ -7,43 +8,51 @@ export default defineNuxtConfig({
     '@nuxt/fonts',
     '@nuxt/icon',
     '@nuxt/image',
-    '@nuxtjs/tailwindcss'
+    '@nuxtjs/tailwindcss',
   ],
 
   runtimeConfig: {
+    // ── Server-only secrets ────────────────────────────────────────
     databaseUrl:   process.env.DATABASE_URL   || '',
-    adminEmail:    process.env.ADMIN_EMAIL    || 'admin@example.com',
+    adminEmail:    process.env.ADMIN_EMAIL    || '',
     adminPassword: process.env.ADMIN_PASSWORD || '',
     jwtSecret:     process.env.JWT_SECRET     || '',
     apiSecretKey:  process.env.API_SECRET_KEY || '',
+    // NOTE: DISABLE_EXTERNAL_API env var removed — manage via Admin > Settings instead
+
+    // ── Public (browser-safe) ──────────────────────────────────────
     public: {
-      siteUrl:      process.env.NUXT_PUBLIC_SITE_URL      || 'http://localhost:3000',
-      siteOwner:    process.env.NUXT_PUBLIC_SITE_OWNER    || 'Developer',
-      topbarTitle:  process.env.NUXT_PUBLIC_TOPBAR_TITLE  || 'repository',
-      topbarDomain: process.env.NUXT_PUBLIC_TOPBAR_DOMAIN || '',
-      heroBanner:   process.env.NUXT_PUBLIC_HERO_BANNER   || "Everything I've built.",
-      heroSub:      process.env.NUXT_PUBLIC_HERO_SUB      || 'A living catalogue of side projects, tools, and experiments.',
-      hideOriginUi: process.env.NUXT_PUBLIC_HIDE_ORIGIN_UI === 'true',
-      forkUrl:      process.env.NUXT_PUBLIC_FORK_URL      || 'https://github.com/surelle-ha/repository',
+      // Only the site URL is needed at build time.
+      // All other settings (toggles, display text) come from the DB.
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
     },
   },
 
+  css: ['~/assets/css/main.css'],
+
   nitro: {
     routeRules: {
-      '/api/projects':     { cache: false },
-      '/api/projects/**':  { cache: false },
-      '/api/settings/**':  { cache: false },
-      '/api/v1/**':        { cache: { maxAge: 60 } },
+      // Disable ALL API route caching so toggle changes take effect immediately
+      '/api/**': { cache: false },
     },
   },
 
   app: {
+    pageTransition: { name: 'page', mode: 'out-in' },
     head: {
       title: 'Repository',
+      htmlAttrs: { lang: 'en' },
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         { name: 'description', content: 'A curated index of projects.' },
+      ],
+      link: [
+        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@600;700;800&family=Inter:wght@400;500&display=swap',
+        },
       ],
     },
   },

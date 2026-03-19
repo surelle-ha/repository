@@ -1,13 +1,19 @@
 import { useDb } from '../../db/client'
 import { projects } from '../../db/schema'
 import { eq, asc } from 'drizzle-orm'
+import { requireExternalApiEnabled } from '../../utils/guards'
 
 export default defineEventHandler(async (event) => {
-  setHeader(event, 'Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120')
+  await requireExternalApiEnabled()
+
+  setHeader(event, 'Cache-Control', 'no-store')
   setHeader(event, 'Access-Control-Allow-Origin', '*')
   setHeader(event, 'Access-Control-Allow-Methods', 'GET, OPTIONS')
 
-  if (getMethod(event) === 'OPTIONS') { setResponseStatus(event, 204); return null }
+  if (getMethod(event) === 'OPTIONS') {
+    setResponseStatus(event, 204)
+    return null
+  }
 
   const query = getQuery(event)
   const db = useDb()

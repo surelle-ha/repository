@@ -1,31 +1,50 @@
+// PATH: app/composables/useSiteSettings.ts
+//
+// Single source of truth for all site settings on the client.
+// Data comes from /api/settings (DB) only — no env vars on the frontend.
+// Shared across all components via useState so there is only one fetch.
+
 export interface SiteSettings {
-  siteOwner:    string
-  topbarTitle:  string
-  topbarDomain: string
-  heroBanner:   string
-  heroSub:      string
+  siteOwner:          string
+  topbarTitle:        string
+  topbarDomain:       string
+  heroBanner:         string
+  heroSub:            string
+  disableExternalApi: string  // 'true' | 'false'
+  hideDocs:           string  // 'true' | 'false'
+  hideOriginUi:       string  // 'true' | 'false'
+  forkUrl:            string
 }
 
-const DEFAULT: SiteSettings = {
-  siteOwner:    'Developer',
-  topbarTitle:  'repository',
-  topbarDomain: '',
-  heroBanner:   "Everything I've built.",
-  heroSub:      'A living catalogue of side projects, tools, and experiments.',
+const DEFAULTS: SiteSettings = {
+  siteOwner:          'Developer',
+  topbarTitle:        'repository',
+  topbarDomain:       '',
+  heroBanner:         "Everything I've built.",
+  heroSub:            'A living catalogue of side projects, tools, and experiments.',
+  disableExternalApi: 'false',
+  hideDocs:           'false',
+  hideOriginUi:       'false',
+  forkUrl:            'https://github.com/surelle-ha/repository',
 }
 
 export function useSiteSettings() {
-  // useState so all components share the same reactive object
-  const settings = useState<SiteSettings>('site:settings', () => ({ ...DEFAULT }))
+  const settings = useState<SiteSettings>('site:settings', () => ({ ...DEFAULTS }))
 
   async function fetchSettings() {
     try {
       const data = await $fetch<SiteSettings>('/api/settings')
-      Object.assign(settings.value, data)
+      // Replace the entire settings object so all computed values react
+      settings.value = { ...DEFAULTS, ...data }
     } catch {
-      // keep defaults on error
+      // Keep defaults silently on error
     }
   }
 
-  return { settings, fetchSettings }
+  // Computed boolean helpers — use these in templates instead of === 'true'
+  const isDocsHidden   = computed(() => settings.value.hideDocs            === 'true')
+  const isApiDisabled  = computed(() => settings.value.disableExternalApi  === 'true')
+  const isOriginHidden = computed(() => settings.value.hideOriginUi        === 'true')
+
+  return { settings, fetchSettings, isDocsHidden, isApiDisabled, isOriginHidden }
 }

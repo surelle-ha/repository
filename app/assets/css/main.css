@@ -1,0 +1,56 @@
+/* PATH: app/assets/css/main.css
+ *
+ * Global styles — imported in nuxt.config.ts via css: ['~/assets/css/main.css']
+ * Covers: smooth scroll, minimalist scrollbar, page transition animation.
+ */
+
+/* ── Smooth scrolling ──────────────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ── Minimalist scrollbar (WebKit: Chrome, Safari, Edge) ───────────────────── */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2a2a32; /* matches --color-border */
+  border-radius: 99px;
+  transition: background 0.2s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #52525e; /* matches --color-muted */
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2a2a32 transparent;
+}
+
+/* ── Page transition ───────────────────────────────────────────────────────── */
+.page-enter-active,
+.page-leave-active {
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
