@@ -28,7 +28,6 @@
         <div class="divide-y divide-border">
           <div v-for="v in vars" :key="v.key"
                class="flex items-start gap-4 px-5 py-4">
-            <!-- Status dot -->
             <span class="mt-0.5 w-2 h-2 rounded-full shrink-0"
                   :class="v.present ? 'bg-green-400' : 'bg-red-400 animate-pulse'" />
             <div class="flex flex-col gap-0.5 flex-1">
@@ -55,7 +54,6 @@
         <div class="divide-y divide-border">
           <div v-for="v in optionalVars" :key="v.key"
                class="flex items-start gap-4 px-5 py-4">
-            <!-- Status dot -->
             <span class="mt-0.5 w-2 h-2 rounded-full shrink-0"
                   :class="v.present ? 'bg-green-400' : 'bg-white/20'" />
             <div class="flex flex-col gap-0.5 flex-1">
@@ -126,9 +124,10 @@ const VAR_META: Record<string, string> = {
 
 // Optional variable metadata
 const OPTIONAL_VAR_META: Record<string, string> = {
-  NUXT_PUBLIC_SITE_URL:           'Canonical URL of your deployment (default: http://localhost:3000)',
-  NUXT_PUBLIC_GOOGLE_ANALYTICS_ID: 'Google Analytics Measurement ID (e.g. G-XXXXXXXXXX)',
-  API_SECRET_KEY:                 'Bearer token for POST /api/v1/projects (external push API)',
+  NUXT_PUBLIC_SITE_URL:                'Canonical URL of your deployment (default: http://localhost:3000)',
+  NUXT_PUBLIC_GOOGLE_ANALYTICS_ID:     'Google Analytics 4 Measurement ID (e.g. G-XXXXXXXXXX)',
+  NUXT_PUBLIC_GOOGLE_SITE_VERIFICATION:'Google Search Console site verification token',
+  API_SECRET_KEY:                      'Bearer token for POST /api/v1/projects (external push API)',
 }
 
 const vars = computed(() =>
@@ -139,7 +138,6 @@ const vars = computed(() =>
   }))
 )
 
-// For optional vars we check via a separate ref populated on recheck
 const optionalPresence = ref<Record<string, boolean>>({})
 
 const optionalVars = computed(() =>
@@ -156,11 +154,15 @@ async function recheck() {
   checking.value = true
   dbError.value  = null
   try {
-    const status = await $fetch<{ ready: boolean; missing: string[]; error?: string; optionalPresence?: Record<string, boolean> }>(
-      '/api/setup/status'
-    )
-    missing.value = status.missing ?? []
-    dbError.value = status.error   ?? null
+    const status = await $fetch<{
+      ready: boolean
+      missing: string[]
+      error?: string
+      optionalPresence?: Record<string, boolean>
+    }>('/api/setup/status')
+
+    missing.value          = status.missing          ?? []
+    dbError.value          = status.error            ?? null
     optionalPresence.value = status.optionalPresence ?? {}
 
     if (status.ready) {
@@ -174,6 +176,5 @@ async function recheck() {
   }
 }
 
-// Run check immediately on mount
 onMounted(recheck)
 </script>

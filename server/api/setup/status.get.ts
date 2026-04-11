@@ -2,15 +2,21 @@ export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
   const missing: string[] = []
 
-  if (!config.databaseUrl)  missing.push('DATABASE_URL')
-  if (!config.jwtSecret)    missing.push('JWT_SECRET')
-  if (!config.adminEmail)   missing.push('ADMIN_EMAIL')
+  if (!config.databaseUrl) missing.push('DATABASE_URL')
+  if (!config.jwtSecret) missing.push('JWT_SECRET')
+  if (!config.adminEmail) missing.push('ADMIN_EMAIL')
   if (!config.adminPassword) missing.push('ADMIN_PASSWORD')
 
+  // Check optional vars presence
   const optionalPresence: Record<string, boolean> = {
-    NUXT_PUBLIC_SITE_URL:            !!(config.public.siteUrl && config.public.siteUrl !== 'http://localhost:3000'),
-    NUXT_PUBLIC_GOOGLE_ANALYTICS_ID: !!(config.public.googleAnalyticsId),
-    API_SECRET_KEY:                  !!(config.apiSecretKey),
+    NUXT_PUBLIC_SITE_URL:
+      !!(config.public.siteUrl && config.public.siteUrl !== 'http://localhost:3000'),
+    NUXT_PUBLIC_GOOGLE_ANALYTICS_ID:
+      !!(config.public.googleAnalyticsId),
+    NUXT_PUBLIC_GOOGLE_SITE_VERIFICATION:
+      !!(config.public.googleSiteVerification),
+    API_SECRET_KEY:
+      !!(config.apiSecretKey),
   }
 
   if (missing.length > 0) {
