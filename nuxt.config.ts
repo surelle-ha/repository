@@ -13,8 +13,14 @@ export default defineNuxtConfig({
   vite: {
     optimizeDeps: {
       include: [
-        '@surelle-ha/dead-fuse'
+        '@surelle-ha/dead-fuse',
+        'tslib'
       ]
+    },
+    build: {
+      rollupOptions: {
+        external: ['tslib']
+      }
     }
   },
 
