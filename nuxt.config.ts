@@ -11,6 +11,9 @@ export default defineNuxtConfig({
   ],
 
   vite: {
+    ssr: {
+      noExternal: ['@supabase/functions-js', 'tslib']
+    },
     optimizeDeps: {
       include: [
         '@surelle-ha/dead-fuse',
@@ -18,8 +21,8 @@ export default defineNuxtConfig({
       ]
     },
     build: {
-      rollupOptions: {
-        external: ['tslib']
+      commonjsOptions: {
+        include: [/node_modules/]
       }
     }
   },
