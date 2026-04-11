@@ -1,3 +1,8 @@
+import { createRequire } from 'node:module'
+
+const require = createRequire(import.meta.url)
+const tslibPath = require.resolve('tslib')
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
@@ -11,6 +16,11 @@ export default defineNuxtConfig({
   ],
 
   vite: {
+    resolve: {
+      alias: {
+        tslib: tslibPath
+      }
+    },
     ssr: {
       noExternal: ['@supabase/functions-js', 'tslib']
     },
