@@ -16,7 +16,6 @@ export function requireInternalToken(event: H3Event) {
   const referer = getHeader(event, 'referer') || getHeader(event, 'referrer') || ''
   if (siteUrl && referer.startsWith(siteUrl)) return
 
-  // 3. Allow localhost in development
   if (
     referer.startsWith('http://localhost') ||
     referer.startsWith('http://127.0.0.1')
