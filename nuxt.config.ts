@@ -10,6 +10,14 @@ export default defineNuxtConfig({
     '@nuxt/scripts'
   ],
 
+  vite: {
+    optimizeDeps: {
+      include: [
+        '@surelle-ha/dead-fuse'
+      ]
+    }
+  },
+
   scripts: {
     registry: {
       googleAnalytics: process.env.NUXT_PUBLIC_GOOGLE_ANALYTICS_ID
